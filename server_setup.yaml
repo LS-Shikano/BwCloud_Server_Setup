@@ -1,32 +1,30 @@
 - hosts:  all
-  gather_facts: no
-  become: no
+  gather_facts: no #facts are built in variables like "ansible_distribution"(the os the host runs)
+  become: no #become root (can be dangerous, because root can do anything on server)
   vars_files:
-    - group_vars/main.yml
+    - group_vars/main.yml #tell ansible where it can find variabales
   tasks:
-   - name: Update and upgrade apt packages
-     become: yes
-        shell:
-            cmd: apt update && apt upgrade -y
 
-    - name:
-     become: yes
-     command: add-apt-repository ppa:deadsnakes/ppa
+    - name: Update and upgrade packages
+      become: yes #safe option is to become root only for a task that requires it
+      apt:
+        upgrade: yes
+        update_cache: yes
 
-     - name: Install extra packages
-        become: yes
-        package:
+    - name: Install required packages
+      become: yes
+      package:
         name: "{{ extra_packages }}"
         state: present
 
-     - name: Create virtual env #remember to specify correct python version
-       shell: |
-         python3.9.9 -m venv venv_otree
-         source ~/venv_otree/bin/activate
+    - name: Create virtual env #remember to specify correct python version
+      shell: |
+        python3.9.9 -m venv venv_otree
+        source ~/venv_otree/bin/activate
 
-     - name:
-       become: yes
-       command:  postgres
+    - name:
+      become: yes
+      command:  postgres
 
 
 
