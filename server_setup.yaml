@@ -1,0 +1,36 @@
+- hosts:  all
+  gather_facts: no
+  become: no
+  vars_files:
+    - group_vars/main.yml
+  tasks:
+   - name: Update and upgrade apt packages
+     become: yes
+        shell:
+            cmd: apt update && apt upgrade -y
+
+    - name:
+     become: yes
+     command: add-apt-repository ppa:deadsnakes/ppa
+
+     - name: Install extra packages
+        become: yes
+        package:
+        name: "{{ extra_packages }}"
+        state: present
+
+     - name: Create virtual env #remember to specify correct python version
+       shell: |
+         python3.9.9 -m venv venv_otree
+         source ~/venv_otree/bin/activate
+
+     - name:
+       become: yes
+       command:  postgres
+
+
+
+
+
+
+

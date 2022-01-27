@@ -1,0 +1,6 @@
+[servers]
+server ansible_host=10.0.0.6 #name the server(doesnt matter what name) and specify the ip
+
+[all:vars]
+ansible_ssh_private_key_file=/home/user/Nextcloud/ssh_keys/cluster.key #path to the ssh key
+ansible_user=ubuntu #usser with which ansible accesses the server
