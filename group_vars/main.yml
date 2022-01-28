@@ -1,8 +1,8 @@
 ---
 packages:
   - python3-pip
-  - python3.9.9-dev #specify python version here
-  - python3.9.9-venv
+  - "{{ python_version }}-dev"
+  - "{{ python_version }}-venv"
   - libpq-dev
   - postgresql
   - postgresql-contrib
@@ -10,9 +10,12 @@ packages:
   - git
   - nginx
   - htop
+  - acl #https://github.com/plone/ansible.plone_server/issues/86#issuecomment-226457346
 
 db_user: user
 db_name: django_db
+
+python_version: python3.9 #specify python version here
 
 
 

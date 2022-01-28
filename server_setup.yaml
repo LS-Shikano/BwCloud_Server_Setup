@@ -1,4 +1,4 @@
-- hosts:  all
+- hosts: all
   gather_facts: no #facts are built in variables like "ansible_distribution"(the os the host runs)
   become: no #become root (can be dangerous, because root can do anything on server)
   vars_files:
@@ -15,20 +15,26 @@
     - name: Install required packages
       become: yes
       package:
-        name: "{{ extra_packages }}"
+        name: "{{ packages }}"
         state: present #ensures package is installed (wont reinstall if thats already the case)
 
     - name: Create virtual env #remember to specify correct python version
       shell: |
-        python3.9.9 -m venv venv_otree
+        {{ python_version }} -m venv venv_otree
         #source ~/venv_otree/bin/activate
+
+    - name: Make sure psycopg2 is installed #needed for the ansible postgre module
+      become: yes #somehow it needs a sudo during installation for ansible to work with it
+      pip:
+        name: psycopg2
+        state: present
 
     - name: Create the database specified in vars
       become: true
-      community.postgresql.postgresql_db: | #https://medium.com/splunkuserdeveloperadministrator/creating-postgresql-database-with-ansible-da65878b782f #this module needs to be installed first: ansible-galaxy collection install community.general
+      become_user: postgres
+      community.postgresql.postgresql_db: #https://medium.com/splunkuserdeveloperadministrator/creating-postgresql-database-with-ansible-da65878b782f #this module needs to be installed first: ansible-galaxy collection install community.general
         name={{ db_name }}
         template='template0' #default template
-        state=present
 
     - name: Ensure user has access to the new database
       become: true
@@ -38,12 +44,11 @@
         name={{ db_user }}
         password={{ db_password }}
         priv=ALL
-        state=present
 
     - name: Make postgre trust IP4 and IP6 instead of md5 #https://www.postgresql.org/docs/9.3/auth-pg-hba-conf.html
       become: true
       replace: #https://docs.ansible.com/ansible/latest/collections/ansible/builtin/replace_module.html
-        path: /etc/httpd/conf/httpd.conf
+        path: /etc/postgresql/12/main/pg_hba.conf
         regexp:  "{{ item.regexp }}"
         replace: "{{ item.replace }}"
         backup: yes
@@ -64,8 +69,8 @@
 
     - name: Download repo containing otree project
       git: #https://www.middlewareinventory.com/blog/ansible-git-example/
-        repo: 'https://{{gituser}}:{{gitpass}}@github.com/hiwis-shikano/OnlineExamERM_2021_22' #currently uses my account, maybe we can use the hiwi account with an access token in the future
-        dest: "/home/ubuntu/"
+        repo: 'https://{{gituser}}:{{gitpass}}@github.com/hiwis-shikano/OnlineExamERM_2021_22.git' #currently uses my account, maybe we can use the hiwi account with an access token in the future
+        dest: "/home/ubuntu/otree"
 
 
 
