@@ -3,6 +3,7 @@
   become: no #become root (can be dangerous, because root can do anything on server)
   vars_files:
     - group_vars/main.yml #tell ansible where it can find variabales
+    - group_vars/secrets.yml #encrypted file containing passwords
   tasks:
 
     - name: Update and upgrade packages
@@ -15,16 +16,64 @@
       become: yes
       package:
         name: "{{ extra_packages }}"
-        state: present
+        state: present #ensures package is installed (wont reinstall if thats already the case)
 
     - name: Create virtual env #remember to specify correct python version
       shell: |
         python3.9.9 -m venv venv_otree
-        source ~/venv_otree/bin/activate
+        #source ~/venv_otree/bin/activate
 
-    - name:
-      become: yes
-      command:  postgres
+    - name: Create the database specified in vars
+      become: true
+      community.postgresql.postgresql_db: | #https://medium.com/splunkuserdeveloperadministrator/creating-postgresql-database-with-ansible-da65878b782f #this module needs to be installed first: ansible-galaxy collection install community.general
+        name={{ db_name }}
+        template='template0' #default template
+        state=present
+
+    - name: Ensure user has access to the new database
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        db={{ db_name }}
+        name={{ db_user }}
+        password={{ db_password }}
+        priv=ALL
+        state=present
+
+    - name: Make postgre trust IP4 and IP6 instead of md5 #https://www.postgresql.org/docs/9.3/auth-pg-hba-conf.html
+      become: true
+      replace: #https://docs.ansible.com/ansible/latest/collections/ansible/builtin/replace_module.html
+        path: /etc/httpd/conf/httpd.conf
+        regexp:  "{{ item.regexp }}"
+        replace: "{{ item.replace }}"
+        backup: yes
+      loop:
+        - { regexp: 'host\s*all\s*all\s*127.0.0.1\/32\s*md5(.*)', replace: 'host    all             all             127.0.0.1/32            trust' } #somehow this only works with these quotes ' '
+        - { regexp: 'host\s*all\s*all\s*::1\/128\s*md5(.*)', replace: 'host    all             all             ::1/128                 trust' }
+
+    - name: Set environment variables #https://help.ubuntu.com/community/EnvironmentVariables
+      become: true
+      blockinfile: #https://docs.ansible.com/ansible/latest/collections/ansible/builtin/blockinfile_module.html
+        path: /etc/ssh/sshd_config
+        block: |
+          DATABASE_URL=postgres://postgres:postgres@localhost/django_db
+          REDIS_URL=redis://localhost:6379
+          OTREE_ADMIN_PASSWORD=password
+          OTREE_PRODUCTION=1
+          OTREE_AUTH_LEVEL=DEMO
+
+    - name: Download repo containing otree project
+      git: #https://www.middlewareinventory.com/blog/ansible-git-example/
+        repo: 'https://{{gituser}}:{{gitpass}}@github.com/hiwis-shikano/OnlineExamERM_2021_22' #currently uses my account, maybe we can use the hiwi account with an access token in the future
+        dest: "/home/ubuntu/"
+
+
+
+
+
+
+
+
 
 
 

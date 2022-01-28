@@ -1,0 +1,5 @@
+---
+collections:
+- community.postgresql
+
+#in this file all modules are specified that the project uses. the modules can be installed with "ansible-galaxy install -r requirements.yml"

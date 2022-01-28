@@ -11,3 +11,9 @@ packages:
   - nginx
   - htop
 
+db_user: user
+db_name: django_db
+
+
+
+
