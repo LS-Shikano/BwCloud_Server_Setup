@@ -18,11 +18,6 @@
         name: "{{ packages }}"
         state: present #ensures package is installed (wont reinstall if thats already the case)
 
-    - name: Create virtual env #remember to specify correct python version
-      shell: |
-        {{ python_version }} -m venv venv_otree
-        #source ~/venv_otree/bin/activate
-
     - name: Make sure psycopg2 is installed #needed for the ansible postgre module
       become: yes #somehow it needs a sudo during installation for ansible to work with it
       pip:
@@ -30,20 +25,20 @@
         state: present
 
     - name: Create the database specified in vars
-      become: true
+      become: yes
       become_user: postgres
       community.postgresql.postgresql_db: #https://medium.com/splunkuserdeveloperadministrator/creating-postgresql-database-with-ansible-da65878b782f #this module needs to be installed first: ansible-galaxy collection install community.general
         name={{ db_name }}
         template='template0' #default template
 
-    - name: Ensure user has access to the new database
-      become: true
+    - name: Set db users password
+      become: yes
       become_user: postgres
       community.postgresql.postgresql_user:
         db={{ db_name }}
         name={{ db_user }}
         password={{ db_password }}
-        priv=ALL
+
 
     - name: Make postgre trust IP4 and IP6 instead of md5 #https://www.postgresql.org/docs/9.3/auth-pg-hba-conf.html
       become: true
@@ -56,21 +51,119 @@
         - { regexp: 'host\s*all\s*all\s*127.0.0.1\/32\s*md5(.*)', replace: 'host    all             all             127.0.0.1/32            trust' } #somehow this only works with these quotes ' '
         - { regexp: 'host\s*all\s*all\s*::1\/128\s*md5(.*)', replace: 'host    all             all             ::1/128                 trust' }
 
-    - name: Set environment variables #https://help.ubuntu.com/community/EnvironmentVariables
-      become: true
-      blockinfile: #https://docs.ansible.com/ansible/latest/collections/ansible/builtin/blockinfile_module.html
-        path: /etc/ssh/sshd_config
-        block: |
-          DATABASE_URL=postgres://postgres:postgres@localhost/django_db
-          REDIS_URL=redis://localhost:6379
-          OTREE_ADMIN_PASSWORD=password
-          OTREE_PRODUCTION=1
-          OTREE_AUTH_LEVEL=DEMO
+    - name: restart postgre
+      become: yes
+      service:
+        name: postgresql
+        state: restarted
+
+    - name: set environment variables #https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+      become: yes
+      ansible.builtin.template:
+        src: templates/envvars.j2
+        dest: /etc/profile.d/envvars.sh
+
+    - name: logout and login to refresh environment
+      meta: reset_connection
 
     - name: Download repo containing otree project
       git: #https://www.middlewareinventory.com/blog/ansible-git-example/
         repo: 'https://{{gituser}}:{{gitpass}}@github.com/hiwis-shikano/OnlineExamERM_2021_22.git' #currently uses my account, maybe we can use the hiwi account with an access token in the future
         dest: "/home/ubuntu/otree"
+        force: yes
+
+    - name: Create virtual env #remember to specify correct python version
+      command: "{{ python_version }} -m venv venv_otree"
+
+    - name: Install requirements for otree project inside the virtual environment created earlier
+      pip:
+        requirements: /home/ubuntu/otree/requirements.txt
+        virtualenv: /home/ubuntu/venv_otree
+        virtualenv_python: python3.9
+
+    - name: Installing circus inside the virtual env
+      pip:
+        name: circus
+        virtualenv: /home/ubuntu/venv_otree
+        virtualenv_python: python3.9
+        state: present
+
+    - name: reset otree database
+      shell: |
+          . ~/venv_otree/bin/activate
+          cd ~/otree
+          yes | otree resetdb #pipe yes input into otree command
+      ignore_errors: yes
+
+    - name: Copy circus config file to server
+      ansible.builtin.copy:
+        src: templates/circus.ini
+        dest: ~/otree/circus.ini
+
+    - name: reinstalling uvicorn to get rid of error #https://groups.google.com/g/otree/c/sj4Ac2dIpRc
+      pip:
+        name: uvicorn
+        state: absent
+        virtualenv: /home/ubuntu/venv_otree
+        virtualenv_python: python3.9
+
+    - name: reinstalling uvicorn to get rid of error
+      pip:
+        name: uvicorn[standard]==0.13.4 #need to specify the version that otree uses
+        state: present
+        virtualenv: /home/ubuntu/venv_otree
+        virtualenv_python: python3.9
+
+    - name: start circus
+      become: yes
+      become_flags: -E
+      shell: |
+        . /home/ubuntu/venv_otree/bin/activate
+        cd /home/ubuntu/otree
+        sudo -E env "PATH=$PATH" circusd --daemon circus.ini --log-output=/home/ubuntu/otree/circus-logs.txt
+
+    - name: Remove default nginx page
+      become: yes
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Copy nginx config to server
+      become: yes
+      ansible.builtin.template:
+        src: templates/otree.j2
+        dest: /etc/nginx/sites-available/oTree
+
+    - name: Create a symbolic link
+      become: yes
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/oTree
+        dest: /etc/nginx/sites-enabled/oTree
+        state: link
+
+    - name: restart nginx
+      become: yes
+      service:
+        name: nginx
+        state: restarted
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
 
 
 

@@ -9,13 +9,15 @@ packages:
   - redis-server
   - git
   - nginx
-  - htop
   - acl #https://github.com/plone/ansible.plone_server/issues/86#issuecomment-226457346
+  - net-tools
 
-db_user: user
+db_user: postgres
 db_name: django_db
 
 python_version: python3.9 #specify python version here
+
+server_name: www.x-why-z.xyz
 
 
 
