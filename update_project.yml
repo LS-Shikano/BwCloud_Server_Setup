@@ -18,11 +18,11 @@
       dest: "/home/ubuntu/otree"
       force: yes
 
-  - name: reset otree database
-      shell: |
-          . ~/venv_otree/bin/activate
-          cd ~/otree
-          yes | otree resetdb
+  - name: Resetting otree database
+    shell: |
+      . ~/venv_otree/bin/activate
+      cd ~/otree
+      yes | otree resetdb #pipe yes input into otree command
 
   - name: Starting circus
     become: yes
@@ -33,9 +33,9 @@
       circusd --daemon circus.ini --log-output=/home/ubuntu/otree/circus-logs.txt
 
   - name: restarting nginx
-      become: yes
-      service:
-        name: nginx
-        state: restarted
+    become: yes
+    service:
+      name: nginx
+      state: restarted
 
 
