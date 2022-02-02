@@ -6,13 +6,11 @@
     - group_vars/secrets.yml #encrypted file containing passwords
   tasks:
 
-  - name: stopping circus
-      become: yes
-      become_flags: -E
-      shell: |
-        . /home/ubuntu/venv_otree/bin/activate
-        cd /home/ubuntu/otree
-        circusctl stop
+  - name: Stopping circus
+    shell: |
+      . /home/ubuntu/venv_otree/bin/activate
+      cd /home/ubuntu/otree
+      circusctl quit
 
   - name: Download repo containing otree project
     git: #https://www.middlewareinventory.com/blog/ansible-git-example/
@@ -26,15 +24,15 @@
           cd ~/otree
           yes | otree resetdb
 
-  - name: starting circus
+  - name: Starting circus
     become: yes
-    become_flags: -E
+    become_flags: "-i" #login-specific resource files such as .profile or .login will be read by the shell
     shell: |
       . /home/ubuntu/venv_otree/bin/activate
-        cd /home/ubuntu/otree
-        circusctl stop
+      cd /home/ubuntu/otree
+      circusd --daemon circus.ini --log-output=/home/ubuntu/otree/circus-logs.txt
 
-  - name: restart nginx
+  - name: restarting nginx
       become: yes
       service:
         name: nginx
