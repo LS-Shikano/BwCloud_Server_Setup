@@ -24,11 +24,11 @@
         name: psycopg2
         state: present
 
-    - name: Creating postgre database
+    - name: Creating postgre database #https://medium.com/splunkuserdeveloperadministrator/creating-postgresql-database-with-ansible-da65878b782f
       become: yes
       become_user: postgres
-      community.postgresql.postgresql_db: #https://medium.com/splunkuserdeveloperadministrator/creating-postgresql-database-with-ansible-da65878b782f #this module needs to be installed first: ansible-galaxy collection install community.general
-        name=postgres
+      community.postgresql.postgresql_db:
+        name=django_db
         template='template0' #default template
 
     - name: Setting db users password
@@ -139,11 +139,13 @@
 
     - name: Starting circus
       become: yes
-      become_flags: -E
+      become_flags: "-i" #login-specific resource files such as .profile or .login will be read by the shell
       shell: |
         . /home/ubuntu/venv_otree/bin/activate
         cd /home/ubuntu/otree
-        sudo -E env "PATH=$PATH" circusd --daemon circus.ini --log-output=/home/ubuntu/otree/circus-logs.txt
+        circusd --daemon circus.ini --log-output=/home/ubuntu/otree/circus-logs.txt
+
+
 
 
 
