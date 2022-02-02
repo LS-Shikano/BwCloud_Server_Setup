@@ -1,0 +1,43 @@
+- hosts: all
+  gather_facts: no #facts are built in variables like "ansible_distribution"(the os the host runs)
+  become: no #become root (can be dangerous, because root can do anything on server)
+  vars_files:
+    - group_vars/main.yml #tell ansible where it can find variabales
+    - group_vars/secrets.yml #encrypted file containing passwords
+  tasks:
+
+  - name: stopping circus
+      become: yes
+      become_flags: -E
+      shell: |
+        . /home/ubuntu/venv_otree/bin/activate
+        cd /home/ubuntu/otree
+        circusctl stop
+
+  - name: Download repo containing otree project
+    git: #https://www.middlewareinventory.com/blog/ansible-git-example/
+      repo: 'https://{{gituser}}:{{gitpass}}@github.com/hiwis-shikano/OnlineExamERM_2021_22.git' #currently uses my account, maybe we can use the hiwi account with an access token in the future
+      dest: "/home/ubuntu/otree"
+      force: yes
+
+  - name: reset otree database
+      shell: |
+          . ~/venv_otree/bin/activate
+          cd ~/otree
+          yes | otree resetdb
+
+  - name: starting circus
+    become: yes
+    become_flags: -E
+    shell: |
+      . /home/ubuntu/venv_otree/bin/activate
+        cd /home/ubuntu/otree
+        circusctl stop
+
+  - name: restart nginx
+      become: yes
+      service:
+        name: nginx
+        state: restarted
+
+

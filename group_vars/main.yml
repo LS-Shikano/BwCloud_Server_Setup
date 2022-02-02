@@ -11,13 +11,13 @@ packages:
   - nginx
   - acl #https://github.com/plone/ansible.plone_server/issues/86#issuecomment-226457346
   - net-tools
-
-db_user: postgres
-db_name: django_db
+  - software-properties-common
+  - python3-certbot-nginx
 
 python_version: python3.9 #specify python version here
 
-server_name: www.x-why-z.xyz
+server_name: ea38ceac-5394-4b30-9dc5-595a515f9ffc.fr.bw-cloud-instance.org #corresponds to bwCloud Hostname
+certbot_mail_address: 678Hggf@protonmail.com
 
 
 

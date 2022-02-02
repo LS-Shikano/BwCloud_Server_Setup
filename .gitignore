@@ -28,3 +28,5 @@ roles/**
 .idea/
 
 *.kate-swp
+
+.ssh/
