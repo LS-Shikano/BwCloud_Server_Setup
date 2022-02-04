@@ -125,7 +125,7 @@
 
     - name: Creating and installing ssl certificate (for https) using certbot
       become: yes
-      shell: 'certbot --nginx -d {{  server_name  }}  -m {{  certbot_mail_address  }} --agree-tos --noninteractive --redirect --expand'
+      shell: 'certbot --nginx -d {{  server_name  }} -d cdm-exam.polver.uni-konstanz.de -m {{  certbot_mail_address  }} --agree-tos --noninteractive --redirect --expand'
 
     - name: Reboot a slow machine that might have lots of updates to apply
       become: yes

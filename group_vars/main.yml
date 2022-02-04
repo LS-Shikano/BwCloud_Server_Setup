@@ -16,8 +16,8 @@ packages:
 
 python_version: python3.9 #specify python version here
 
-server_name: ea38ceac-5394-4b30-9dc5-595a515f9ffc.fr.bw-cloud-instance.org #corresponds to bwCloud Hostname
-certbot_mail_address: 678Hggf@protonmail.com
+server_name: a54832fd-068a-43be-9779-79d119491c5c.fr.bw-cloud-instance.org  #corresponds to bwCloud Hostname
+certbot_mail_address: hiwis.shikano@uni-konstanz.de
 
 
 

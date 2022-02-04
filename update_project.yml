@@ -11,6 +11,7 @@
       . /home/ubuntu/venv_otree/bin/activate
       cd /home/ubuntu/otree
       circusctl quit
+    ignore_errors: yes #in case the server just started
 
   - name: Download repo containing otree project
     git: #https://www.middlewareinventory.com/blog/ansible-git-example/
