@@ -33,6 +33,12 @@
       cd /home/ubuntu/otree
       circusd --daemon circus.ini --log-output=/home/ubuntu/otree/circus-logs.txt
 
+  - name: Resetting otree database again
+    shell: |
+      . ~/venv_otree/bin/activate
+      cd ~/otree
+      yes | otree resetdb #pipe yes input into otree command
+
   - name: restarting nginx
     become: yes
     service:

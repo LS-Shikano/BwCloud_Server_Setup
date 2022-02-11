@@ -2,8 +2,6 @@
 
 This project uses ansible to automate the set up of a server hosting an OTree web application. 
 
-**To do:**
-- test update_project.yml. Maybe someone else can do that to get to know ansible?
 
 ## General remarks
 
@@ -28,7 +26,7 @@ sudo enabled)
 `ansible-galaxy install -r requirements.yml`
 
 ### Set up vault password and ssh keys
-- For the current project: ask me and I'll send the required file. I think it would be unsafe to include these files
+- For the current project: find the passwords on the fileserver. I think it would be unsafe to include these files
 in the repo. 
 - For future projects: just encrypt a new secrets.yaml with variables used in the playbooks and add new ssh keys to .ssh/ . 
 Of course you have to set up the cloud instance with the new ssh key.
@@ -38,7 +36,7 @@ Of course you have to set up the cloud instance with the new ssh key.
 
 `ansible-playbook server_setup.yml --vault-password-file vault_pass.txt`
 
-update otree project (pull fromrepo) with: #didnt test but should work 
+update otree project (pull fromrepo) with: 
 
 `ansible-playbook update_project.yml --vault-password-file vault_pass.txt` 
 
@@ -52,11 +50,11 @@ project
 │   hosts.ini ---> The inventory. Change server IP, ssh file path and user here
 │   ansible.cfg ---> file in which u have to e.g. specify inventory
 │   requirements.yml --> Contains used modules besides core
-│   vault_pass.txt ---> Included in .gitignore. Password for ansible vault. Ask me if u need it.
+│   vault_pass.txt ---> Included in .gitignore. Password for ansible vault. Its on the fileserver.
 │
 └───group_vars
 │   │   main.yml ---> Declare unencrypted variables. Most important: Server name and python version.
-│   │   secrets.yml ---> Declare encrypted variables, e.g. otree admin password. See instructions below.
+│   │   secrets.yml ---> Declare encrypted variables, e.g. otree admin password. See instructions above.
 │   
 └───templates ---> files to copy to server (in .j2 files you can use variables)
 │   │   circus.ini ---> config for circus
