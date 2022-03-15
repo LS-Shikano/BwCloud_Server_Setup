@@ -1,6 +1,6 @@
 # documentation_server_setup
 
-This project contains a script that automatically creates a BW Cloud instance and prepares an ansible project based on the created instances IP etc. Set up can then be finished by running playbooks contained in the ansible folder. The server_setup playbook will secure the server and install the otree app. For detailed on what the script does, please read the code. I tried to explain what is done using comments and print statements.
+This project contains a scripts to automate the deployment of an OTree App. It creates a BW Cloud instance and prepares an ansible project based on the created instances IP etc. Set up can then be finished by running playbooks contained in the ansible folder. The server_setup playbook will secure the server and install the otree app. For detailed information on what the script does, please read the code. I tried to explain what is done using comments and print statements.
 
 ## Instructions to create and set up server
 
@@ -19,7 +19,7 @@ This project contains a script that automatically creates a BW Cloud instance an
 
 4. Create .env file
 
-The script retrieves information by reading environment variables that can be set in a file calles ".env".
+The script retrieves information by reading environment variables that can be set in a file called ".env".
 
 Example .env file:
 
