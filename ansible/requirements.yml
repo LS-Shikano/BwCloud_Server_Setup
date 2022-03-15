@@ -2,4 +2,7 @@
 collections:
 - community.postgresql
 
+roles:
+- jstet.initial_server_setup
+
 #in this file all modules are specified that the project uses. the modules can be installed with "ansible-galaxy install -r requirements.yml"

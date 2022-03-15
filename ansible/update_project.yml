@@ -1,10 +1,13 @@
 - hosts: all
-  gather_facts: no #facts are built in variables like "ansible_distribution"(the os the host runs)
-  become: no #become root (can be dangerous, because root can do anything on server)
+  # facts are built in variables like "ansible_distribution"(the os the host runs)
+  gather_facts: no
+  # become root (can be dangerous, because root can do anything on server)
+  become: no
+  # tell ansible where it can find variabales
   vars_files:
-    - group_vars/main.yml #tell ansible where it can find variabales
-    - group_vars/secrets.yml #encrypted file containing passwords
-  tasks:
+    # encrypted file containing e.g. passwords
+    - vars/vault.yml
+    - vars/settings.yml
 
   - name: Stopping circus
     shell: |
@@ -44,5 +47,3 @@
     service:
       name: nginx
       state: restarted
-
-

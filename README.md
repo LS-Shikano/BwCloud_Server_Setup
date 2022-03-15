@@ -1,79 +1,81 @@
 # documentation_server_setup
 
-This project uses ansible to automate the set up of a server hosting an OTree web application.
+This project contains a script that automatically creates a BW Cloud instance and prepares an ansible project based on the created instances IP etc. Set up can then be finished by running playbooks contained in the ansible folder. The server_setup playbook will secure the server and install the otree app. For detailed on what the script does, please read the code. I tried to explain what is done using comments and print statements.
 
+## Instructions to create and set up server
 
-## General remarks
+1. Install ansible
 
-- This ansible project was tested on an Ubuntu 20.04 instance hosted on bw cloud (with preconfigured default user "ubuntu" and passwordless
-sudo enabled)
-- important: you need to allow http and https to pass the bw clouds instances firewall
-
-## Instructions
-
-### Install ansible
-
-- Probably just follow the documentation [here](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-windows)
+- Follow the documentation provided [here](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-windows)
 - Ansible doesn't run on windows. However, you have some options:
   - [official FAQ](https://docs.ansible.com/ansible/latest/user_guide/windows_faq.html#windows-faq-ansible)
   - you could set up a cloud machine or a VM on your computer and use ansible from there
 
-### Clone repo
-- Self explanatory
+2. Clone this repository.
 
-### Install requirements
+3. Install python requirements
 
-`ansible-galaxy install -r requirements.yml`
+`python -m pip install -r requirements.txt`
 
-### Set up vault password and ssh keys
-- For the current project: find the passwords on the fileserver. I think it would be unsafe to include these files
-in the repo.
-- For future projects: just encrypt a new secrets.yaml with variables used in the playbooks and add new ssh keys to .ssh/ .
-Of course you have to set up the cloud instance with the new ssh key.
-- [Documentation on Ansible Vault](https://www.redhat.com/sysadmin/introduction-ansible-vault)
+4. Create .env file
 
-### Run Playbooks:
+The script retrieves information by reading environment variables that can be set in a file calles ".env".
 
-`ansible-playbook server_setup.yml --vault-password-file vault_pass.txt`
+Example .env file:
 
-update otree project (pull fromrepo) with:
+```
+# OS stands for Open Stack, which is the cloud platform software BW Cloud uses
+
+# Operating system you want the server to run. This project was tested with Ubuntu 20.04
+OS_IMAGE="Ubuntu 20.04"
+
+# Type of instance you want the script to create. Visit https://www.bw-cloud.org/de/bwcloud_scope/flavors for available options.
+OS_FLAVOR="m1.tiny"
+
+# Name of the server on BW cloud
+OS_SERVER_NAME="exam-22"
+
+# Credential needed to get an authentication token. Visit https://portal.bw-cloud.org/project/api_access/ and click "View Credentials"
+OS_USERNAME="jonas.stettner@uni-konstanz.de"
+OS_PASSWORD="pw"
+OS_PROJECT_NAME ="Projekt_jonas.stettner@uni-konstanz.de"
+
+
+SERVER_HOSTNAME="exam-22"
+
+# User that you will use to log in to the server
+SERVER_USER="user"
+
+OTREE_ADMIN_PW="pw"
+
+# Postgre DB password
+DB_PW="pw"
+
+ANSIBLE_VAULT_PW="pw"
+
+# This is the domain people will see when using the application
+DOMAIN="cdm-exam.polver.uni-konstanz.de"
+
+# Mail address to register the ssl certificate with
+CERTBOT_MAIL_ADRESS="hiwis.shikano@uni-konstanz.de"
+
+# This is what the ansible playbook will use the retrieve the otree projects code
+GIT_USER="hiwis.shikano"
+
+# Valid access token. Visit https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+GIT_TOKEN="pw"
+```
+
+5. Run script:
+
+`python main.py`
+
+6. Follow the instructions displayed during script execution.
+
+## Instructions to update project
+
+Update otree project (pull from repo) with:
 
 `ansible-playbook update_project.yml --vault-password-file vault_pass.txt`
 
-Both of these commands will only work if the vault password and the ssh key are in your folder.
-
-## Folder structure:
-```
-project
-│   server_setup.yml ---> Use this playbook to set up the server
-│   update_project.yml  ----> Use this playbook to update the otree project
-│   hosts.ini ---> The inventory. Change server IP, ssh file path and user here
-│   ansible.cfg ---> file in which u have to e.g. specify inventory
-│   requirements.yml --> Contains used modules besides core
-│   vault_pass.txt ---> Included in .gitignore. Password for ansible vault. Its on the fileserver.
-│
-└───group_vars
-│   │   main.yml ---> Declare unencrypted variables. Most important: Server name and python version.
-│   │   secrets.yml ---> Declare encrypted variables, e.g. otree admin password. See instructions above.
-│   
-└───templates ---> files to copy to server (in .j2 files you can use variables)
-│   │   circus.ini ---> config for circus
-│   │   envvars.j2 ---> contains linux environment variables to declare
-│   │   otree.j2 ---> nginx server config
-│
-└───.ssh #Included in .gitignore. Contains private and public ssh key. Ask me if u need it.
-│   │   exam_server_21_22 ---> private key
-│   │   exam_server_21_22.pub ---> public key
-
-
-```
-## Other matters
-
-- To link the server to the uni domain, give IT person the "bwCloud Hostname"
-
-- Testing on fresh install -> rebuild instance instead of creating new one
-
-## Sources
-
-- https://medium.com/@lalit.garghate/handling-openstack-through-apis-1dd9298b68c8
-- 
+You have to be in the ansible folder for this to work
