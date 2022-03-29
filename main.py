@@ -1,8 +1,8 @@
-from helpers import get_auth_token, generate_cloud_config, get_id, create_sec_group_rule
+from helpers import get_auth_token, generate_cloud_config, get_id
+# from helpers import create_sec_group_rule
 from helpers import generate_hosts, generate_vault, generate_vault_pw_file, generate_settings
 import requests
 import time
-import re
 import os
 from dotenv import load_dotenv
 import sys
@@ -16,68 +16,81 @@ console = Console()
 
 load_dotenv()
 
+
 console.print("Hello :smiley:")
 console.rule("")
 with console.status("", spinner="dots"):
+    if os.getenv("OS_REGION_NAME") == "Freiburg":
+        region = "fr"
+    else:
+        console.rule("")
+        console.print(":warning: Script execution failed :warning: \n")
+        print("\n")
+        print("-- Our project only allows creating instances in the region 'Freiburg' -- \n")
+        console.rule("")
+        sys.exit("-- Exiting script --")
+
     print("-- Retrieving authentication token --")
     token = get_auth_token()
 
     ##################################################
     print("-- Retrieving image id --")
-    image_id = get_id("https://api01.ma.bw-cloud.org:9292/v2/images",
+    image_id = get_id("{x}/v2/images".format(x=os.getenv("OS_IMAGE_SERVICE_URL")),
                       "images", os.getenv("OS_IMAGE"), token)
 
-    print("-- Retrievingflavor id --")
-    flavor_id = get_id('https://api01.ma.bw-cloud.org:8774/v2.1/flavors',
+    print("-- Retrieving flavor id --")
+    flavor_id = get_id("{x}/flavors".format(x=os.getenv("OS_COMPUTE_SERVICE_URL")),
                        "flavors", os.getenv("OS_FLAVOR"), token)
 
     ###################################################
 
     print("-- Searching for the required security_group --")
-    Found = get_id('https://api01.ma.bw-cloud.org:9696/v2.0/security-groups', "security_groups",
-                   "allow_everything", token)
+
+    Found = get_id("{x}//v2.0/security-groups".format(x=os.getenv("OS_NETWORK_SERVICE_URL")),
+                   "security_groups", "allow_everything", token)
 
     if Found is None:
         print("-- Required security group was not found. Creating it now --")
-        json2 = {
-            "security_group": {
-                "name": "allow_everything",
-                "description": "This security group will allow all in- and outbund conections.\
-                 This is very insecure.\
-                 Only use it when you plan to configure a firewall on the server itself.",
-            }
-        }
+        # json2 = {
+        #     "security_group": {
+        #         "name": "allow_everything",
+        #         "description": "This security group will allow all in- and outbund conections.\
+        #      This is very insecure.\
+        #      Only use it when you plan to configure a firewall on the server itself.",
+        #     }
+        #     }
+        #
+        # res = requests.post("{x}//v2.0/security-groups".format(x=os.getenv("OS_NETWORK_SERVICE_URL")),
+        #                     headers={'content-type': 'application/json',
+        #                              'X-Auth-Token': token,
+        #                              },
+        #                     json=json2
+        #                     )
+        #
+        # security_group_id = res.json()["security_group"]["id"]
+        #
+        # create_sec_group_rule("ingress", "udp", security_group_id, token)
+        # create_sec_group_rule("egress", "udp", security_group_id, token)
+        # create_sec_group_rule("ingress", "tcp", security_group_id, token)
+        # create_sec_group_rule("egress", "tcp",  security_group_id, token)
 
-        res = requests.post('https://api01.ma.bw-cloud.org:9696/v2.0/security-groups',
-                            headers={'content-type': 'application/json',
-                                     'X-Auth-Token': token,
-                                     },
-                            json=json2
-                            )
-
-        security_group_id = res.json()["security_group"]["id"]
-
-        create_sec_group_rule("ingress", "udp", security_group_id, token)
-        create_sec_group_rule("egress", "udp", security_group_id, token)
-        create_sec_group_rule("ingress", "tcp", security_group_id, token)
-        create_sec_group_rule("egress", "tcp",  security_group_id, token)
-
-    # Security group already created
+        # Security group already created
     else:
         print("-- Security group already exists --")
     ###################################################
+
     print("-- Creating instance --")
     json = {
-        "server": {
-                    "name":  os.getenv("OS_SERVER_NAME"),
-                    "imageRef": image_id,
-                    "flavorRef": flavor_id,
-                    "user_data": generate_cloud_config(),
-                    "security_groups": [{"name": "allow_everything"}]
-                    }
-    }
+                      "server": {
+                          "name":  os.getenv("OS_SERVER_NAME"),
+                          "imageRef": image_id,
+                          "flavorRef": flavor_id,
+                          "user_data": generate_cloud_config(),
+                          "security_groups": [{"name": "allow_everything"}]
+                          }
+                      }
 
-    res = requests.post('https://api01.ma.bw-cloud.org:8774/v2.1/servers',
+    res = requests.post("{x}/servers".format(x=os.getenv("OS_COMPUTE_SERVICE_URL")),
                         headers={'content-type': 'application/json',
                                  'X-Auth-Token': token,
                                  },
@@ -93,7 +106,8 @@ with console.status("", spinner="dots"):
         console.print(":warning: Instance creation failed :warning: \n")
         traceback.print_exc()
         print("\n")
-        print("-- You can usually find out what went wrong by reading the response to the POST request -- \n")
+        print(
+                      "-- You can usually find out what went wrong by reading the response to the POST request -- \n")
         print(data)
         console.rule("")
         sys.exit("-- Exiting script --")
@@ -102,7 +116,8 @@ with console.status("", spinner="dots"):
     print("-- Waiting 15 seconds for the instance to be spawned --")
     time.sleep(15)
     print("-- Retrieving instances ip and domain --")
-    res = requests.get("https://api01.ma.bw-cloud.org:8774/v2.1/servers/{id}".format(id=server_id),
+
+    res = requests.get("{x}/servers/{id}".format(x=os.getenv("OS_COMPUTE_SERVICE_URL"), id=server_id),
                        headers={'content-type': 'application/json',
                                 'X-Auth-Token': token
                                 },
@@ -110,18 +125,16 @@ with console.status("", spinner="dots"):
 
     data = res.json()["server"]
 
-    ip = data["addresses"]['public-belwue'][0]["addr"]
+    ip = data["addresses"]['public'][0]["addr"]
 
     # bwCloud Hostname  is not part of the requested json, so it has to be generated manually
-    region = data["links"][0]["href"]
-    # retrieving region from api link
-    region = re.search("(?<=1.)(.*)(?=.bw)", region).group(0)
-    bw_cloud_hostname = "{id}.{region}.bw-cloud-instance.org".format(id=server_id, region="ma")
+    bw_cloud_hostname = "{id}.{region}.bw-cloud-instance.org".format(
+            id=server_id, region=region)
 
     print("-- Instances IP: {ip} -- ".format(ip=ip))
 
-    console.print("--- :sparkle: Important! The instances FQDN is: \
-    \n {domain} :sparkle:-- ".format(domain=bw_cloud_hostname))
+    console.print("[green]-- :sparkle: Important! The instances FQDN is: :sparkle: --")
+    console.print("[blue underline]{link}".format(link=bw_cloud_hostname))
 
     print("-- Preparing ansible playbook execution --")
 
@@ -138,20 +151,18 @@ with console.status("", spinner="dots"):
     generate_vault()
 
     print("-- Installing ansible requirements --")
-    bashCommand = "ansible-galaxy install -r ansible/requirements.yml"
+    bashCommand = "ansible-galaxy install -r ansible/requirements.yml --force"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
 
     print("-- Waiting 20 seconds for the instance to start completely --")
     time.sleep(20)
 
-    print("-- Ready for playbook execution --")
+    print("-- Ready for playbook execution (though sometimes you even need to wait longer for server startup)--")
 
-# TODO: Automatically run ansible playbook
+    ###############################################
 
-###############################################
-
-MARKDOWN = """
+    MARKDOWN = """
 # What to do now:
 
 1. Write an Email to the IT support containing the FQDN of the instance this script has just
@@ -176,8 +187,8 @@ ansible-playbook update_project.yml --vault-password-file=.vault_pw
 ```
 """
 
-md = Markdown(MARKDOWN)
-console.rule("")
-console.print(md)
-console.rule("")
-console.print("Bye :smiley:")
+    md = Markdown(MARKDOWN)
+    console.rule("")
+    console.print(md)
+    console.rule("")
+    console.print("Bye :smiley:")

@@ -1,0 +1,18 @@
+
+#cloud-config
+
+hostname: exam-22
+manage_etc_hosts: true
+locale: en_US.UTF-8
+timezone: Europe/Berlin
+
+users:
+- default
+- name: user
+  groups: sudo
+  sudo: "ALL=(ALL) NOPASSWD:ALL"
+  lock_passwd: true
+  shell: /bin/bash
+  ssh_authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBv4VPMEe98Guug8/T+aoQhaKq/YaIldaoKWXgCY8KV6xy+0g3VgDQNsRRgGKO/EH2GBGXeekRXYjcDRAz9vtBY5ItHh7De78vt07nmpkdH4VDTmA7uDMT4cJMK/2Oq12Tb/MdzfdMrcGUP5xbfBjYW+cLSFdeN8JHs0ig5SxDEJrRCyRWEgc2sy7nxQ15S9EoAWrLkc9STillA14zNhulQA0CUUTZKgu0DODBqFmLQB7hpL3MF7d0nM39UGCOTjp+3VeDImUX5c+TZoCSPUMNECLUAnPfWW73he5iG5lQx3/f5EH7SBU6tDvKxPAQw4Y5i29g84G9VXhkiAH1sQ5dZcUnr1Vfmt3if1i1+9BroGOoj5LlFD+2pPeGDfx1H3wY8YG2ZZtGKmCb9A6RM2Ql5LTw+lRdcvUFRD4lc3ONgZtSBNxiKlVfH9cCyOjDncMW+AEcSir7nb/KBRpCe+ETWp6LKnBJfa63haq1GnXAKqJ9hKZrxbPYxqDtsibXcAAtSrfPWB5oqfqe1RbbF4S0t/wOxICVnTNFszoSSSAfamgCDZ+8fHYBQ8uh2v49Jxz1LLjO5bvGIL5RpljCeljL/VWd6O+iQnTLwrMGFoyTSpGWTwOh/K7n51bD/WVONtto4TWdmarU4+4k64nWWvSEYuH/CGjWUHSK9ic7W3hmvQ==
+    

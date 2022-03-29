@@ -35,7 +35,8 @@ def get_auth_token():
                         "domain": {
                             "name": "default"
                         },
-                        "name":  os.getenv("OS_PROJECT_NAME")
+                        "id": os.getenv("OS_PROJECT_ID"),
+                        "name":  os.getenv("OS_PROJECT_NAME"),
                     }
                 }
             }
@@ -125,37 +126,44 @@ def get_id(url, type, name, token):
                        )
 
     data = res.json()[type]
-    return next((item for item in data if item["name"] == name), None)["id"]
+
+    result = next((item for item in data if item["name"] == name), None)
+
+    if result is None:
+        return
+    else:
+        return result["id"]
 
 
-def create_sec_group_rule(direction, protocol, security_group_id, token):
-    """
-    Creates a security rule inside of a security group.
-
-    Args:
-        direction (string): "ingress" or "egress"
-        protocol (string): "tcp", "udp" or "icmp"
-        security_group_id (string): valid id for a security group you want the rule to be created in
-        token (string): valid token for the Open Stack API
-    """
-
-    json = {
-        "security_group_rule": {
-            "direction": direction,
-            "port_range_min": "1",
-            "ethertype": "IPv4",
-            "port_range_max": "65535",  # highest possible port number
-            "protocol": protocol,
-            "security_group_id": security_group_id
-        }
-    }
-
-    requests.post('https://api01.ma.bw-cloud.org:9696//v2.0/security-group-rules',
-                  headers={'content-type': 'application/json',
-                           'X-Auth-Token': token,
-                           },
-                  json=json
-                  )
+# def create_sec_group_rule(direction, protocol, security_group_id, token):
+#     """
+#     Creates a security rule inside of a security group.
+#
+#     Args:
+#         direction (string): "ingress" or "egress"
+#         protocol (string): "tcp", "udp" or "icmp"
+#         security_group_id (string): valid id for a security group you want the rule to be created in
+#         token (string): valid token for the Open Stack API
+#     """
+#
+#     json = {
+#         "security_group_rule": {
+#             "direction": direction,
+#             "port_range_min": "1",
+#             "ethertype": "IPv4",
+#             "port_range_max": "65535",  # highest possible port number
+#             "protocol": protocol,
+#             "security_group_id": security_group_id,
+#             "region": "Freiburg"
+#         }
+#     }
+#
+#     requests.post('https://api01.ma.bw-cloud.org:9696//v2.0/security-group-rules',
+#                   headers={'content-type': 'application/json',
+#                            'X-Auth-Token': token,
+#                            },
+#                   json=json
+#                   )
 
 
 def generate_hosts(ip):
