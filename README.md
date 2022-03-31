@@ -1,8 +1,9 @@
 ### TODO:
-  - Handle if security group is missing (smth is buggy with the creation of security rules)
-  - Automatically run ansible playbook
+  - Handle when security group is missing (smth is buggy with the creation of security rules)
+  - Automatically run ansible playbook (necessary?)
   - Check if server with same name already exists
   - Maybe find a better way to deal with regions
+  - Update documentation
 
 # documentation_server_setup
 

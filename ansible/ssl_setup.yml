@@ -9,7 +9,7 @@
     - vars/vault.yml
     - vars/settings.yml
 
-tasks:
+  tasks:
   - name: Creating and installing ssl certificate (for https) using certbot
     become: yes
     shell: 'certbot --nginx -d {{  domain  }} -d {{ bw_cloud_hostname }} -m {{  certbot_mail_address  }} --agree-tos --noninteractive --redirect --expand'
@@ -17,5 +17,5 @@ tasks:
   - name: Restarting nginx
     become: yes
     service:
-      name: nginx
-      state: restarted
+        name: nginx
+        state: restarted
