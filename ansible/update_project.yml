@@ -18,7 +18,7 @@
 
   - name: Download repo containing otree project
     git: #https://www.middlewareinventory.com/blog/ansible-git-example/
-      repo: 'https://{{gituser}}:{{gitpass}}@github.com/hiwis-shikano/OnlineExamERM_2021_22.git' #currently uses my account, maybe we can use the hiwi account with an access token in the future
+      repo: "https://{{  git_user  }}:{{  git_token  }}@github.com/{{ git_repo }}.git"
       dest: "/home/ubuntu/otree"
       force: yes
 

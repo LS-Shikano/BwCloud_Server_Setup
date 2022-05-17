@@ -95,7 +95,7 @@
 
     - name: Downloading repo containing otree project
       git:
-        repo: "https://{{  git_user  }}:{{  git_token  }}@github.com/hiwis-shikano/OnlineExamERM_2021_22.git"
+        repo: "https://{{  git_user  }}:{{  git_token  }}@github.com/{{ git_repo }}.git"
         dest: "/home/{{  ansible_user_id  }}/otree"
         force: yes
 

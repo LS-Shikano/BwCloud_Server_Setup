@@ -5,7 +5,7 @@
   - Maybe find a better way to deal with regions
   - Update documentation
 
-# documentation_server_setup
+# documentation_server_setup (WIP!!)
 
 This project contains scripts to automate the deployment of an OTree app. It creates a BW Cloud instance and prepares an ansible project based on the created instances IP etc. Set up can then be finished by running playbooks contained in the ansible folder. The server_setup playbook will secure the server and install the otree app. For detailed information on what the script does, please read the code. I tried to explain what is done using comments and print statements.
 
@@ -71,6 +71,9 @@ GIT_USER="hiwis.shikano"
 
 # Valid access token. Visit https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
 GIT_TOKEN="pw"
+
+#Github Repo, e.g.
+GIT_REPO="LS-Shikano/SS22_FirstWave_StudentSurvey"
 ```
 
 5. Run script:

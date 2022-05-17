@@ -207,12 +207,15 @@ def generate_settings(bw_cloud_hostname):
 bw_cloud_hostname: {{ var1 }}
 domain: {{ var2 }}
 certbot_mail_address: {{ var3 }}
+git_repo: {{ var4 }}
     """
 
     data = {
         "var1": bw_cloud_hostname,
         "var2": os.getenv("DOMAIN"),
-        "var3": os.getenv("CERTBOT_MAIL_ADRESS")}
+        "var3": os.getenv("CERTBOT_MAIL_ADRESS"),
+        "var4": os.getenv("GIT_REPO"),
+        }
 
     j2_template = Template(template)
 
