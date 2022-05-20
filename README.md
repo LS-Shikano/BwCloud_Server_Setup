@@ -26,9 +26,9 @@ This project contains scripts to automate the deployment of an OTree app. It cre
 
 4. Create .env file
 
-The script retrieves information by reading environment variables that can be set in a file called ".env".
+The script retrieves information by reading environment variables that can be set in a file called ".env". Also see "example_env_file.txt"
 
-### Example .env file:
+### .env file variables explanataion:
 
 OS stands for Open Stack, which is the cloud platform software BW Cloud uses
 
@@ -36,7 +36,7 @@ Operating system you want the server to run. This project was tested with Ubuntu
 ```
 OS_IMAGE="Ubuntu 20.04"
 ```
-ype of instance you want the script to create. Visit https://www.bw-cloud.org/de/bwcloud_scope/flavors for available options.
+type of instance you want the script to create. Visit https://www.bw-cloud.org/de/bwcloud_scope/flavors for available options.
 ```
 OS_FLAVOR="m1.tiny"
 ```
