@@ -28,51 +28,64 @@ This project contains scripts to automate the deployment of an OTree app. It cre
 
 The script retrieves information by reading environment variables that can be set in a file called ".env".
 
-Example .env file:
+### Example .env file:
 
+OS stands for Open Stack, which is the cloud platform software BW Cloud uses
+
+Operating system you want the server to run. This project was tested with Ubuntu 20.04
 ```
-# OS stands for Open Stack, which is the cloud platform software BW Cloud uses
-
-# Operating system you want the server to run. This project was tested with Ubuntu 20.04
 OS_IMAGE="Ubuntu 20.04"
-
-# Type of instance you want the script to create. Visit https://www.bw-cloud.org/de/bwcloud_scope/flavors for available options.
+```
+ype of instance you want the script to create. Visit https://www.bw-cloud.org/de/bwcloud_scope/flavors for available options.
+```
 OS_FLAVOR="m1.tiny"
-
-# Name of the server on BW cloud
+```
+Name of the server on BW cloud
+```
 OS_SERVER_NAME="exam-22"
-
-# Credential needed to get an authentication token. Visit https://portal.bw-cloud.org/project/api_access/ and click "View Credentials"
+```
+Credentials needed to get an authentication token. Visit https://portal.bw-cloud.org/project/api_access/ and click "View Credentials"
+```
 OS_USERNAME="jonas.stettner@uni-konstanz.de"
 OS_PASSWORD="pw"
 OS_PROJECT_NAME ="Projekt_jonas.stettner@uni-konstanz.de"
-
-
+```
+The server hostname (differs from the name that open stack will display in its GUI)
+```
 SERVER_HOSTNAME="exam-22"
-
-# User that you will use to log in to the server
+```
+User that you will use to log in to the server
+```
 SERVER_USER="user"
-
+```
+Password for otree admin login.
+```
 OTREE_ADMIN_PW="pw"
-
-# Postgre DB password
+```
+Postgre DB password
+```
 DB_PW="pw"
 
 ANSIBLE_VAULT_PW="pw"
-
-# This is the domain people will see when using the application
+```
+This is the domain people will see when using the application
+```
 DOMAIN="cdm-exam.polver.uni-konstanz.de"
-
-# Mail address to register the ssl certificate with
+```
+Mail address to register the ssl certificate with
+```
 CERTBOT_MAIL_ADRESS="hiwis.shikano@uni-konstanz.de"
-
-# This is what the ansible playbook will use the retrieve the otree projects code
+```
+This is what the ansible playbook will use the to retrieve the otree projects code
+```
 GIT_USER="hiwis.shikano"
-
-# Valid access token. Visit https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+```
+Valid access token. Visit https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+```
 GIT_TOKEN="pw"
-
-#Github Repo, e.g.
+```
+Github Repo containing the otree code. Make sure to not include / at the beginning. Write the name exactly like in this example.
+```
 GIT_REPO="LS-Shikano/SS22_FirstWave_StudentSurvey"
 ```
 

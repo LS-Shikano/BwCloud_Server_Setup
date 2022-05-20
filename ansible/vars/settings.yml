@@ -1,6 +1,6 @@
 
-bw_cloud_hostname: 84307a1b-5149-4d58-8e86-66630023f184.fr.bw-cloud-instance.org
+bw_cloud_hostname: 3c0819e9-921a-41b4-9307-ca4f92cf74ae.fr.bw-cloud-instance.org
 domain: cdm-exam.polver.uni-konstanz.de
 certbot_mail_address: hiwis.shikano@uni-konstanz.de
-git_repo: LS-Shikano/SS22_FirstWave_StudentSurvey
+git_repo: LS-Shikano/OnlineExamERM_2021_22
     
