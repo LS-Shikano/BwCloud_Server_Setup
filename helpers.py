@@ -42,7 +42,7 @@ def get_auth_token():
             }
         }
 
-    url = "https://idm02.bw-cloud.org:5000/v3/auth/tokens"
+    url = os.getenv("OS_A")
 
     res = requests.post(url, json=data, headers={"Content-Type": "application/json"})
 

@@ -165,23 +165,30 @@ with console.status("", spinner="dots"):
     MARKDOWN = """
 # What to do now:
 
-1. Write an Email to the IT support containing the FQDN of the instance this script has just
-created. Ask them to create an alias for the domain you want the site to run under, e.g.
-"cdm-exam.polver.uni.konstanz.de" Find the FQDN above. As long as the IT support hasn't confirmed
-they have set up an alias, you won't be able to set up SSL. That is why there is a
-seperate playbook for this task.
-
-2. Configure the server with ansible by running the following commands:
+1. Configure the server with ansible by running the following commands:
 ```
 cd ansible
 ansible-playbook server_setup.yml --vault-password-file=.vault_pw
 ```
-3. Once the IT support has confirmed they have set up an alias, set up SSL by running:
+2. 
+
+A: If the custom domain is managed by you, just add the usual entries
+to the DNS config. (https://docs.hetzner.com/konsoleh/account-management/configuration/dnsadministration/)
+
+B: If you want the OTree project to be reachable under a custom domain ending with "uni-konstanz.de", 
+write an Email to the IT support containing the FQDN of the instance this script has just
+created. Ask them to create an alias for the domain you want the site to run under, e.g.
+"cdm-exam.polver.uni.konstanz.de" (this should be the domain you specified in the .env file)
+Find the FQDN above. As long as the IT support hasn't confirmed
+they have set up an alias, you won't be able to set up SSL. That is why there is a
+seperate playbook for this task. 
+
+Once you have added the DNS entries or the IT support has confirmed they have set up an alias, set up SSL by running:
 ```
 cd ansible
 ansible-playbook ssl_setup.yml --vault-password-file=.vault_pw
 ```
-4. You can optionally update the project in the future by running:
+3. You can optionally update the project in the future by running:
 ```
 ansible-playbook update_project.yml --vault-password-file=.vault_pw
 ```

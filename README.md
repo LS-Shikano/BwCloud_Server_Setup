@@ -3,102 +3,79 @@
   - Automatically run ansible playbook (necessary?)
   - Check if server with same name already exists
   - Maybe find a better way to deal with regions
-  - Update documentation
 
-# documentation_server_setup (WIP!!)
+# BW Cloud OTree Server Setup
 
-This project contains scripts to automate the deployment of an OTree app. It creates a BW Cloud instance and prepares an ansible project based on the created instances IP etc. Set up can then be finished by running playbooks contained in the ansible folder. The server_setup playbook will secure the server and install the otree app. For detailed information on what the script does, please read the code. I tried to explain what is done using comments and print statements.
+This project contains scripts to automate the deployment of an OTree app. It creates a BW Cloud instance and prepares ansible playbooks based on the created instances properties. Set up can then be finished by running playbooks contained in the ansible folder. 
 
-## Instructions to create and set up server
+The "server_setup" playbook will secure the server and install the otree app. 
 
-1. Install ansible
+If needed, the playbook "ssl_setup" can configure the server to be reachable under a custom domain with SSL.
 
-- Follow the documentation provided [here](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-windows)
-- Ansible doesn't run on windows. However, you have some options:
+The playbook "update_project" updates the OTree deployment based on the changes in the linked GitHub Repo (it justs pulls from it basically).
+
+For detailed information on what the script and the playbook do, please read the code. I tried to explain what is done using comments and print statements.
+
+## Instructions 
+
+### 1. Install ansible
+
+* Follow the documentation provided [here](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-windows)
+* Ansible doesn't run on windows. However, you have some options:
   - [official FAQ](https://docs.ansible.com/ansible/latest/user_guide/windows_faq.html#windows-faq-ansible)
   - you could set up a cloud machine or a VM on your computer and use ansible from there
 
-2. Clone this repository.
-
-3. Install python requirements
-
-`python -m pip install -r requirements.txt`
-
-4. Create .env file
-
-The script retrieves information by reading environment variables that can be set in a file called ".env". Also see "example_env_file.txt"
-
-### .env file variables explanataion:
-
-OS stands for Open Stack, which is the cloud platform software BW Cloud uses
-
-Operating system you want the server to run. This project was tested with Ubuntu 20.04
+### 2. Clone this repository.
 ```
-OS_IMAGE="Ubuntu 20.04"
-```
-type of instance you want the script to create. Visit https://www.bw-cloud.org/de/bwcloud_scope/flavors for available options.
-```
-OS_FLAVOR="m1.tiny"
-```
-Name of the server on BW cloud
-```
-OS_SERVER_NAME="exam-22"
-```
-Credentials needed to get an authentication token. Visit https://portal.bw-cloud.org/project/api_access/ and click "View Credentials"
-```
-OS_USERNAME="jonas.stettner@uni-konstanz.de"
-OS_PASSWORD="pw"
-OS_PROJECT_NAME ="Projekt_jonas.stettner@uni-konstanz.de"
-```
-The server hostname (differs from the name that open stack will display in its GUI)
-```
-SERVER_HOSTNAME="exam-22"
-```
-User that you will use to log in to the server
-```
-SERVER_USER="user"
-```
-Password for otree admin login.
-```
-OTREE_ADMIN_PW="pw"
-```
-Postgre DB password
-```
-DB_PW="pw"
-
-ANSIBLE_VAULT_PW="pw"
-```
-This is the domain people will see when using the application
-```
-DOMAIN="cdm-exam.polver.uni-konstanz.de"
-```
-Mail address to register the ssl certificate with
-```
-CERTBOT_MAIL_ADRESS="hiwis.shikano@uni-konstanz.de"
-```
-This is what the ansible playbook will use the to retrieve the otree projects code
-```
-GIT_USER="hiwis.shikano"
-```
-Valid access token. Visit https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
-```
-GIT_TOKEN="pw"
-```
-Github Repo containing the otree code. Make sure to not include / at the beginning. Write the name exactly like in this example.
-```
-GIT_REPO="LS-Shikano/SS22_FirstWave_StudentSurvey"
+git clone git@github.com:LS-Shikano/BwCloud_Server_Setup.git
 ```
 
-5. Run script:
+### 3. Create a virtual environment, activate it and install requirements
 
-`python main.py`
+There are multiple ways to achieve this, one is the following:
+```
+cd BWCloud_Server_Setup
+python -m pip venv env
+source env/bin/activate
+python -m pip install -r requirements.tx
+```
 
-6. Follow the instructions displayed during script execution.
+### 4. Create and edit .env file
 
+The script retrieves information by reading environment variables that can be set in a file called ".env".
+Copy the example .env file (while in the projects root folder):
+``` 
+cp example_env_file.env .env
+```
+Then edit the file with your text editor. It contains explanations of the variables you need to specify. 
+### 5. Run script:
+```
+python main.py
+```
+### 6. Run ansible playbooks
+As described in the instructions displayed by the script, run:
+```
+cd ansible
+ansible-playbook server_setup.yml --vault-password-file=.vault_pw
+```
+### 7. Optionally set up SSL
+**A:** If you want the OTree project to be reachable under a custom domain that is managed by you, add the usual entries to the DNS config. See e.g.: https://docs.hetzner.com/konsoleh/account-management/configuration/dnsadministration/
+
+**B:** If you want the OTree project to be reachable under a custom domain ending with "uni-konstanz.de", 
+write an Email to the IT support containing the FQDN (Fully qualified domain name) of the instance this script has just created. Ask them to create an alias for the domain you want the site to run under, e.g.
+"cdm-exam.polver.uni.konstanz.de" (this should be the domain you specified in the .env file)
+Find the FQDN in the scripts output. As long as the IT support hasn't confirmed
+they have set up an alias, you won't be able to set up SSL. That is why there is a seperate playbook for this task. 
+
+Once you have added the needed DNS entries or the IT support has confirmed they have set up an alias, set up SSL by running:
+```
+ansible-playbook ssl_setup.yml --vault-password-file=.vault_pw
+```
 ## Instructions to update project
 
 Update otree project (pull from repo) with:
+```
+ansible-playbook update_project.yml --vault-password-file vault_pass.txt
+```
 
-`ansible-playbook update_project.yml --vault-password-file vault_pass.txt`
 
-You have to be in the ansible folder for this to work
