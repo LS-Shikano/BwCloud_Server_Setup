@@ -14,7 +14,7 @@ This project contains scripts to automate the deployment of an OTree app. It cre
 
 - The playbook *update_project* updates the OTree deployment based on the changes in the linked GitHub Repo (it just pulls from it basically).
 
-For detailed information on what the script and the playbook do, please read the code. I tried to explain what is done using comments and print statements.
+For detailed information on what the script and the playbooks do, please read the code. I tried to explain what is done using comments and print statements.
 
 ## Instructions 
 
