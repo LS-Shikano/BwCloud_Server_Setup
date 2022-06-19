@@ -8,11 +8,11 @@
 
 This project contains scripts to automate the deployment of an OTree app. It creates a BW Cloud instance and prepares ansible playbooks based on the created instances properties. Set up can then be finished by running playbooks contained in the ansible folder. 
 
-- The "server_setup" playbook will secure the server and install the OTree app. 
+- The *server_setup* playbook will secure the server and install the OTree app. 
 
-- If needed, the playbook "ssl_setup" can configure the server to be reachable under a custom domain with SSL.
+- If needed, the playbook *ssl_setup* can configure the server to be reachable under a custom domain with SSL.
 
-- The playbook "update_project" updates the OTree deployment based on the changes in the linked GitHub Repo (it just pulls from it basically).
+- The playbook *update_project* updates the OTree deployment based on the changes in the linked GitHub Repo (it just pulls from it basically).
 
 For detailed information on what the script and the playbook do, please read the code. I tried to explain what is done using comments and print statements.
 
