@@ -17,20 +17,24 @@ This project contains scripts to automate the deployment of an OTree app. It cre
 For detailed information on what the script and the playbooks do, please read the code. I tried to explain what is done using comments and print statements.
 
 ## Instructions 
+### 1. Register on BW cloud
+Follow [these instructions](https://www.bw-cloud.org/de/erste_schritte)
 
-### 1. Install ansible
+If you want to set up a server inside of the project LS Shikano, your account needs to be added to it first. 
+
+### 2. Install ansible
 
 * Follow the documentation provided [here](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-windows)
 * Ansible doesn't run on windows. However, you have some options:
   - [official FAQ](https://docs.ansible.com/ansible/latest/user_guide/windows_faq.html#windows-faq-ansible)
   - you could set up a cloud machine or a VM on your computer and use ansible from there
 
-### 2. Clone this repository.
+### 3. Clone this repository.
 ```
 git clone git@github.com:LS-Shikano/BwCloud_Server_Setup.git
 ```
 
-### 3. Create a virtual environment, activate it and install requirements
+### 4. Create a virtual environment, activate it and install requirements
 
 There are multiple ways to achieve this, one is the following:
 ```
@@ -40,7 +44,7 @@ source env/bin/activate
 python -m pip install -r requirements.tx
 ```
 
-### 4. Create and edit .env file
+### 5. Create and edit .env file
 
 The script retrieves information by reading environment variables that can be set in a file called ".env".
 Copy the example .env file (while in the projects root folder):
@@ -48,17 +52,17 @@ Copy the example .env file (while in the projects root folder):
 cp example_env_file.env .env
 ```
 Then edit the file with your text editor. It contains explanations of the variables you need to specify. 
-### 5. Run script:
+### 6. Run script:
 ```
 python main.py
 ```
-### 6. Run ansible playbooks
+### 7. Run ansible playbooks
 As described in the instructions displayed by the script, run:
 ```
 cd ansible
 ansible-playbook server_setup.yml --vault-password-file=.vault_pw
 ```
-### 7. Optionally set up SSL
+### 8. Optionally set up SSL
 **A:** If you want the OTree project to be reachable under a custom domain that is managed by you, add the usual entries to the DNS config. See e.g.: https://docs.hetzner.com/konsoleh/account-management/configuration/dnsadministration/
 
 **B:** If you want the OTree project to be reachable under a custom domain ending with "uni-konstanz.de", 
