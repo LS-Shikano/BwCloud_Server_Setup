@@ -4,7 +4,7 @@
   - Check if server with same name already exists
   - Maybe find a better way to deal with regions
 
-# BW Cloud OTree Server Setup
+# bwCloud OTree Server Setup
 
 This project contains scripts to automate the deployment of an OTree app. It creates a BW Cloud instance and prepares ansible playbooks based on the created instances properties. Set up can then be finished by running playbooks contained in the ansible folder. 
 
@@ -17,10 +17,12 @@ This project contains scripts to automate the deployment of an OTree app. It cre
 For detailed information on what the script and the playbooks do, please read the code. I tried to explain what is done using comments and print statements.
 
 ## Instructions 
-### 1. Register on BW cloud
-Follow [these instructions](https://www.bw-cloud.org/de/erste_schritte).
 
-If you want to set up a server inside of the project that the LS Shikano uses on BW cloud, your account needs to be added first. 
+### 1. Register on bwCloud
+Students of the Unversity Konstanz can create one small instance on bwCloud for free.
+Follow [these instructions](https://www.bw-cloud.org/de/erste_schritte) to register.
+
+If you want to set up a server inside of the project that the LS Shikano uses on bwCloud, your account needs to be added first. Contact an admin for that.
 
 ### 2. Install ansible
 
@@ -81,5 +83,9 @@ Update otree project (pull from repo) with:
 ```
 ansible-playbook update_project.yml --vault-password-file vault_pass.txt
 ```
+
+## Notes
+- Remember to delete servers that you don't need anymore (if it's part of the LS Shikano project it will keep generating costs)
+- Create a snapshot before deletion if the server was used for something important (e.g. exam)
 
 
