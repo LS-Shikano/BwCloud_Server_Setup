@@ -18,9 +18,9 @@ For detailed information on what the script and the playbooks do, please read th
 
 ## Instructions 
 ### 1. Register on BW cloud
-Follow [these instructions](https://www.bw-cloud.org/de/erste_schritte)
+Follow [these instructions](https://www.bw-cloud.org/de/erste_schritte).
 
-If you want to set up a server inside of the project LS Shikano, your account needs to be added to it first. 
+If you want to set up a server inside of the project LS Shikano, your account needs to be added first. 
 
 ### 2. Install ansible
 
