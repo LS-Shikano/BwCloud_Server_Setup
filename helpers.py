@@ -42,7 +42,7 @@ def get_auth_token():
             }
         }
 
-    url = os.getenv("OS_A")
+    url = os.getenv("OS_AUTH_URL")
 
     res = requests.post(url, json=data, headers={"Content-Type": "application/json"})
 

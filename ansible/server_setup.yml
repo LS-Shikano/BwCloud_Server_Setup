@@ -29,6 +29,7 @@
             - net-tools
             - software-properties-common
             - python3-certbot-nginx
+
           services:
             - name: http
               port: 80
@@ -103,10 +104,10 @@
       command: "python3 -m venv venv_otree"
 
     - name: Install requirements (based on requirements.txt) inside of virtual environment
-      pip:
-        requirements: /home/{{  ansible_user_id  }}/otree/requirements.txt
-        virtualenv: /home/{{  ansible_user_id  }}/venv_otree
-
+      shell: |
+        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+        cd /home/{{  ansible_user_id  }}/otree
+        pip install -r requirements.txt
 
     - name: Installing circus inside of virtual env
       pip:
@@ -114,10 +115,15 @@
         virtualenv: /home/{{  ansible_user_id  }}/venv_otree
         state: present
 
+    - name: wtf why
+      shell: |
+        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+        pip install websockets==10.1
+
     - name: Resetting otree database
       shell: |
-          . ~/venv_otree/bin/activate
-          cd ~/otree
+          . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+          cd /home/{{  ansible_user_id  }}/otree
           yes | otree resetdb
 
     - name: Copying circus config file to server
@@ -143,13 +149,6 @@
         src: /etc/nginx/sites-available/oTree
         dest: /etc/nginx/sites-enabled/oTree
         state: link
-
-    - name: Restarting nginx
-      become: yes
-      service:
-        name: nginx
-        state: restarted
-
 
     - name: Reboot
       become: yes
