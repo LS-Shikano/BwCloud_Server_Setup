@@ -1,6 +1,6 @@
 - hosts: all
   # facts are built in variables like "ansible_distribution"(the os the host runs)
-  gather_facts: no
+  gather_facts: yes
   # become root (can be dangerous, because root can do anything on server)
   become: no
   # tell ansible where it can find variabales
@@ -8,42 +8,41 @@
     # encrypted file containing e.g. passwords
     - vars/vault.yml
     - vars/settings.yml
+  tasks:
+    - name: Stopping circus
+      shell: |
+        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+        circusctl quit
+      ignore_errors: yes #in case the server just started
 
-  - name: Stopping circus
-    shell: |
-      . /home/ubuntu/venv_otree/bin/activate
-      cd /home/ubuntu/otree
-      circusctl quit
-    ignore_errors: yes #in case the server just started
+    - name: Download repo containing otree project
+      git: #https://www.middlewareinventory.com/blog/ansible-git-example/
+        repo: "https://{{  git_user  }}:{{  git_token  }}@github.com/{{ git_repo }}.git"
+        dest: "cd /home/{{  ansible_user_id  }}/otree"
+        force: yes
 
-  - name: Download repo containing otree project
-    git: #https://www.middlewareinventory.com/blog/ansible-git-example/
-      repo: "https://{{  git_user  }}:{{  git_token  }}@github.com/{{ git_repo }}.git"
-      dest: "/home/ubuntu/otree"
-      force: yes
+    - name: Resetting otree database
+      shell: |
+        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+        cd /home/{{  ansible_user_id  }}/otree
+        yes | otree resetdb #pipe yes input into otree command
 
-  - name: Resetting otree database
-    shell: |
-      . ~/venv_otree/bin/activate
-      cd ~/otree
-      yes | otree resetdb #pipe yes input into otree command
+    - name: Starting circus
+      become: yes
+      become_flags: "-i" #login-specific resource files such as .profile or .login will be read by the shell
+      shell: |
+        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+        cd /home/{{  ansible_user_id  }}/otree
+        circusd --daemon circus.ini --log-output=/home/{{  ansible_user_id  }}/otree/circus-logs.txt
 
-  - name: Starting circus
-    become: yes
-    become_flags: "-i" #login-specific resource files such as .profile or .login will be read by the shell
-    shell: |
-      . /home/ubuntu/venv_otree/bin/activate
-      cd /home/ubuntu/otree
-      circusd --daemon circus.ini --log-output=/home/ubuntu/otree/circus-logs.txt
+    - name: Resetting otree database again
+      shell: |
+        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+        cd /home/{{  ansible_user_id  }}/otree
+        yes | otree resetdb #pipe yes input into otree command
 
-  - name: Resetting otree database again
-    shell: |
-      . ~/venv_otree/bin/activate
-      cd ~/otree
-      yes | otree resetdb #pipe yes input into otree command
-
-  - name: restarting nginx
-    become: yes
-    service:
-      name: nginx
-      state: restarted
+    - name: restarting nginx
+      become: yes
+      service:
+        name: nginx
+        state: restarted
