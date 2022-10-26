@@ -118,7 +118,7 @@
     - name: wtf why
       shell: |
         . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
-        pip install websockets==10.1
+        python -m pip install websockets==10.1
 
     - name: Resetting otree database
       shell: |

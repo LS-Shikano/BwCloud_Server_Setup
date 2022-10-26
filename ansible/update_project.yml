@@ -18,7 +18,7 @@
     - name: Download repo containing otree project
       git: #https://www.middlewareinventory.com/blog/ansible-git-example/
         repo: "https://{{  git_user  }}:{{  git_token  }}@github.com/{{ git_repo }}.git"
-        dest: "cd /home/{{  ansible_user_id  }}/otree"
+        dest: /home/{{  ansible_user_id  }}/otree
         force: yes
 
     - name: Resetting otree database
