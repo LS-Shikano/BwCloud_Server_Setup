@@ -58,13 +58,8 @@ Then edit the file with your text editor. It contains explanations of the variab
 ```
 python main.py
 ```
-### 7. Run ansible playbooks
-As described in the instructions displayed by the script, run:
-```
-cd ansible
-ansible-playbook server_setup.yml --vault-password-file=.vault_pw
-```
-### 8. Optionally set up SSL
+### 7. After having configured your custom domain run the ansible playbook
+
 **A:** If you want the OTree project to be reachable under a custom domain that is managed by you, add the usual entries to the DNS config. See e.g.: https://docs.hetzner.com/konsoleh/account-management/configuration/dnsadministration/
 
 **B:** If you want the OTree project to be reachable under a custom domain ending with "uni-konstanz.de", 
@@ -73,9 +68,12 @@ write an Email to the IT support containing the FQDN (Fully qualified domain nam
 Find the FQDN in the scripts output. As long as the IT support hasn't confirmed
 they have set up an alias, you won't be able to set up SSL. That is why there is a seperate playbook for this task. 
 
+**C:** If you only want the server to be reachable with the BWCloud hostname, set "DOMAIN=="false" in the .env file.
+
 Once you have added the needed DNS entries or the IT support has confirmed they have set up an alias, set up SSL by running:
 ```
-ansible-playbook ssl_setup.yml --vault-password-file=.vault_pw
+cd ansible
+ansible-playbook server_setup.yml --vault-password-file=.vault_pw
 ```
 ## Instructions to update project
 

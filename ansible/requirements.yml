@@ -4,5 +4,6 @@ collections:
 
 roles:
 - jstet.initial_server_setup
+- jstet.caddy_ansible
 
-#in this file all modules are specified that the project uses. the modules can be installed with "ansible-galaxy install -r requirements.yml"
+

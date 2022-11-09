@@ -24,11 +24,10 @@
             - postgresql-contrib
             - redis-server
             - git
-            - nginx
             - acl #https://github.com/plone/ansible.plone_server/issues/86#issuecomment-226457346
             - net-tools
             - software-properties-common
-            - python3-certbot-nginx
+            - vim
 
           services:
             - name: http
@@ -43,6 +42,21 @@
                 - udp
       become: yes
 
+
+    - block:
+      - name: Installing Caddy
+        include_role:
+          name: jstet.caddy_ansible
+        vars:
+          caddy_config: |
+            {{ domain + ', ' if domain != 'false'}}{{  bw_cloud_hostname  }} {
+              reverse_proxy localhost:8000
+            }
+          caddy_systemd_capabilities_enabled: true
+          caddy_systemd_capabilities: "CAP_NET_BIND_SERVICE"
+          caddy_setcap: true
+      become: yes
+      
 
     - name: Making sure psycopg2 is installed #needed for ansible postgre module
       become: yes
@@ -89,10 +103,9 @@
         src: templates/envvars.j2
         dest: /etc/profile.d/envvars.sh
 
-     # not sure if necessary #not sure if necessary but cant hurt
+    # not sure if necessary but cant hurt
     - name: logout and login to refresh environment
       meta: reset_connection
-
 
     - name: Downloading repo containing otree project
       git:
@@ -115,11 +128,6 @@
         virtualenv: /home/{{  ansible_user_id  }}/venv_otree
         state: present
 
-    - name: wtf why
-      shell: |
-        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
-        python -m pip install websockets==10.1
-
     - name: Resetting otree database
       shell: |
           . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
@@ -131,34 +139,15 @@
         src: templates/circus.ini
         dest: ~/otree/circus.ini
 
-    - name: Removing default nginx page
-      become: yes
-      file:
-        path: /etc/nginx/sites-enabled/default
-        state: absent
-
-    - name: Copying nginx config to server
-      become: yes
-      template:
-        src: templates/otree.j2
-        dest: /etc/nginx/sites-available/oTree
-
-    - name: Creating a symbolic link
-      become: yes
-      file:
-        src: /etc/nginx/sites-available/oTree
-        dest: /etc/nginx/sites-enabled/oTree
-        state: link
-
     - name: Reboot
       become: yes
       reboot:
 
-    # https://groups.google.com/g/otree/c/sj4Ac2dIpRc
-    - name: bugfix for "Unsupported upgrade request"
-      shell: |
-        . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
-        pip3 install uvicorn[standard]==0.13.4
+    # # https://groups.google.com/g/otree/c/sj4Ac2dIpRc
+    # - name: bugfix for "Unsupported upgrade request"
+    #   shell: |
+    #     . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
+    #     pip3 install uvicorn[standard]==0.13.4
 
     - name: Starting circus
       become: yes

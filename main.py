@@ -165,12 +165,7 @@ with console.status("", spinner="dots"):
     MARKDOWN = """
 # What to do now:
 
-1. Configure the server with ansible by running the following commands:
-```
-cd ansible
-ansible-playbook server_setup.yml --vault-password-file=.vault_pw
-```
-2. 
+The server was created and you need to configure it with an Ansible Playbook. The Playbook includes setting up SSL (https), so there are two options:
 
 A: If the custom domain is managed by you, just add the usual entries
 to the DNS config. (https://docs.hetzner.com/konsoleh/account-management/configuration/dnsadministration/)
@@ -183,12 +178,14 @@ Find the FQDN above. As long as the IT support hasn't confirmed
 they have set up an alias, you won't be able to set up SSL. That is why there is a
 seperate playbook for this task. 
 
-Once you have added the DNS entries or the IT support has confirmed they have set up an alias, set up SSL by running:
+C: If you only want the server to be reachable with the BWCloud hostname, set "DOMAIN=="False" in the .env file.
+
+Once you have added the DNS entries, the IT support has confirmed they have set up an alias or you set DOMAIN to false, configure the server by running:
 ```
 cd ansible
-ansible-playbook ssl_setup.yml --vault-password-file=.vault_pw
+ansible-playbook server_setup.yml --vault-password-file=.vault_pw
 ```
-3. You can optionally update the project in the future by running:
+You can optionally update the project in the future by running:
 ```
 ansible-playbook update_project.yml --vault-password-file=.vault_pw
 ```
