@@ -20,13 +20,9 @@ def get_auth_token():
     data = {
         "auth": {
             "identity": {
-                "methods": ["password"], "password": {
-                                                        "user": {
-                                                            "domain": {
-                                                                "name": "Default"
-                                                                },
-                                                            "name": os.getenv("OS_USERNAME"),
-                                                            "password": os.getenv("OS_PASSWORD")
+                "methods": ["application_credential"], "application_credential": {
+                                                            "id": os.getenv("OS_USERNAME"),
+                                                            "secret": os.getenv("OS_PASSWORD")
                                                             }
                 }
             },
@@ -40,11 +36,12 @@ def get_auth_token():
                     }
                 }
             }
-        }
+        
 
     url = os.getenv("OS_AUTH_URL")
 
-    res = requests.post(url, json=data, headers={"Content-Type": "application/json"})
+    res = requests.post(url, json=data, headers={
+                        "Content-Type": "application/json"})
 
     return res.headers["X-Subject-Token"]
 
@@ -83,7 +80,8 @@ users:
 
     stream = os.popen('ssh-add -L')
     ssh_key = stream.read()
-    ssh_key = re.search("^(.*?)==", ssh_key).group(0)  # in case command returns more than one key
+    # in case command returns more than one key
+    ssh_key = re.search("^(.*?)==", ssh_key).group(0)
 
     data = {
         "user": os.getenv("SERVER_USER"),
@@ -95,8 +93,8 @@ users:
     sample_string_bytes = j2_template.render(data).encode(
         "ascii")  # https://docs.openstack.org/api-ref/compute/?expanded=create-server-detail
 
-    base64_bytes = base64.b64encode(sample_string_bytes)
-    base64_string = base64_bytes.decode("ascii")
+    base64_bytes=base64.b64encode(sample_string_bytes)
+    base64_string=base64_bytes.decode("ascii")
 
     return base64_string
 
@@ -119,15 +117,15 @@ def get_id(url, type, name, token):
         id of type string
     """
 
-    res = requests.get(url,
-                       headers={'content-type': 'application/json',
+    res=requests.get(url,
+                       headers = {'content-type': 'application/json',
                                 'X-Auth-Token': token
                                 },
                        )
 
-    data = res.json()[type]
+    data=res.json()[type]
 
-    result = next((item for item in data if item["name"] == name), None)
+    result=next((item for item in data if item["name"] == name), None)
 
     if result is None:
         return
@@ -175,7 +173,7 @@ def generate_hosts(ip):
         ip (string): the ip you want ansible to execute the playbook for
     """
 
-    template = """
+    template="""
 [servers]
 server ansible_host={{ ip }}
 
@@ -183,7 +181,7 @@ server ansible_host={{ ip }}
 ansible_user={{ user }}
     """
 
-    data = {
+    data={
         "ip": ip,
         "user": os.getenv("SERVER_USER")}
 

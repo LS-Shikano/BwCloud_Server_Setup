@@ -1,11 +1,7 @@
 - hosts: all
-  # facts are built in variables like "ansible_distribution"(the os the host runs)
-  gather_facts: yes
-  # become root (can be dangerous, because root can do anything on server)
+  gather_facts: no
   become: no
-  # tell ansible where it can find variabales
   vars_files:
-    # encrypted file containing e.g. passwords
     - vars/vault.yml
     - vars/settings.yml
   tasks:
@@ -40,9 +36,3 @@
         . /home/{{  ansible_user_id  }}/venv_otree/bin/activate
         cd /home/{{  ansible_user_id  }}/otree
         yes | otree resetdb #pipe yes input into otree command
-
-    - name: restarting nginx
-      become: yes
-      service:
-        name: nginx
-        state: restarted
