@@ -10,8 +10,6 @@ This project contains scripts to automate the deployment of an OTree app. It cre
 
 - The *server_setup* playbook will secure the server and install the OTree app. 
 
-- If needed, the playbook *ssl_setup* can configure the server to be reachable under a custom domain with SSL.
-
 - The playbook *update_project* updates the OTree deployment based on the changes in the linked GitHub Repo (it just pulls from it basically).
 
 For detailed information on what the script and the playbooks do, please read the code. I tried to explain what is done using comments and print statements.
@@ -23,6 +21,9 @@ Students of the Unversity Konstanz can create one small instance on bwCloud for 
 Follow [these instructions](https://www.bw-cloud.org/de/erste_schritte) to register.
 
 If you want to set up a server inside of the project that the LS Shikano uses on bwCloud, your account needs to be added first. Contact an admin for that.
+
+### 1a.
+To access your project on bwCloud, the script needs credentials. One way to do this is using application credentials. If there are no application credentials set up that you have access to, create one by following [this](https://www.bw-cloud.org/de/bwcloud_scope/nutzen#api_token) tutorial.
 
 ### 2. Install ansible
 

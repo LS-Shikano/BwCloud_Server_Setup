@@ -8,7 +8,7 @@
 
 # Tower runtime roles
 roles/**
-!roles/requirements.yml
+
 
 # Try tyo avoid any plain-text passwords
 *pwd*

@@ -1,6 +1,6 @@
 
-bw_cloud_hostname: fc66f8c0-c2fe-4c69-8555-c2a376504f25.fr.bw-cloud-instance.org
-domain: ballot.schmischma.xyz
+bw_cloud_hostname: f112e1cb-c6e8-4c7e-b3d4-beecf4aee0c3.fr.bw-cloud-instance.org
+domain: false
 certbot_mail_address: hiwis.shikano@uni-konstanz.de
-git_repo: LS-Shikano/BallotExp_clean
+git_repo: LS-Shikano/WS22_FirstWave_StudentSurvey
     

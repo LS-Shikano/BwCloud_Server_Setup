@@ -9,7 +9,7 @@ import re
 load_dotenv()
 
 
-def get_auth_token():
+def get_auth_token(os_id, os_secret):
     """
        This function requests an authorization token for BW Clouds Open Stack API. It reads required
         variables from the the bash environment.
@@ -17,12 +17,13 @@ def get_auth_token():
        Returns: authorization token of type string
 
        """
+    print(os_id, os_secret)
     data = {
         "auth": {
             "identity": {
                 "methods": ["application_credential"], "application_credential": {
-                                                            "id": os.getenv("OS_USERNAME"),
-                                                            "secret": os.getenv("OS_PASSWORD")
+                                                            "id": os_id,
+                                                            "secret": os_secret
                                                             }
                 }
             },
@@ -46,7 +47,7 @@ def get_auth_token():
     return res.headers["X-Subject-Token"]
 
 
-def generate_cloud_config():
+def generate_cloud_config(user, hostname, ssh_path):
     """
     This function generates a cloud-config file using jinja2. Cloud-config is a tool that allows you
     define e.g. what users and ssh.keys should be set up automatically after the first start of the
@@ -78,15 +79,12 @@ users:
     - {{  ssh_key  }}
     """
 
-    stream = os.popen('ssh-add -L')
-    ssh_key = stream.read()
-    # in case command returns more than one key
-    ssh_key = re.search("^(.*?)==", ssh_key).group(0)
+    ssh_key = txt = open(ssh_path, 'r').read()
 
     data = {
-        "user": os.getenv("SERVER_USER"),
+        "user": user,
         "ssh_key": ssh_key,
-        "hostname":  os.getenv("SERVER_HOSTNAME")}
+        "hostname":  hostname}
 
     j2_template = Template(template)
 

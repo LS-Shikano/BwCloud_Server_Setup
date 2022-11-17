@@ -49,7 +49,7 @@
           name: jstet.caddy_ansible
         vars:
           caddy_config: |
-            {{ domain + ', ' if domain != 'false'}}{{  bw_cloud_hostname  }} {
+            {{ domain + ', ' if domain != false}}{{  bw_cloud_hostname  }} {
               reverse_proxy localhost:8000
             }
           caddy_systemd_capabilities_enabled: true

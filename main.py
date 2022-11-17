@@ -31,7 +31,7 @@ with console.status("", spinner="dots"):
         sys.exit("-- Exiting script --")
 
     print("-- Retrieving authentication token --")
-    token = get_auth_token()
+    token = get_auth_token(os.getenv("OS_ID"), os.getenv("OS_SECRET"))
 
     ##################################################
     print("-- Retrieving image id --")
@@ -82,10 +82,10 @@ with console.status("", spinner="dots"):
     print("-- Creating instance --")
     json = {
                       "server": {
-                          "name":  os.getenv("OS_SERVER_NAME"),
+                          "name":  os.getenv("SERVER_NAME"),
                           "imageRef": image_id,
                           "flavorRef": flavor_id,
-                          "user_data": generate_cloud_config(),
+                          "user_data": generate_cloud_config(os.getenv("SERVER_USER"), os.getenv("SERVER_NAME"), os.getenv("SSH_PATH")),
                           "security_groups": [{"name": "allow_everything"}]
                           }
                       }
@@ -165,7 +165,7 @@ with console.status("", spinner="dots"):
     MARKDOWN = """
 # What to do now:
 
-The server was created and you need to configure it with an Ansible Playbook. The Playbook includes setting up SSL (https), so there are two options:
+The server was created and you need to configure it with an Ansible Playbook. The Playbook includes setting up SSL (https), so there are three options:
 
 A: If the custom domain is managed by you, just add the usual entries
 to the DNS config. (https://docs.hetzner.com/konsoleh/account-management/configuration/dnsadministration/)
@@ -178,9 +178,9 @@ Find the FQDN above. As long as the IT support hasn't confirmed
 they have set up an alias, you won't be able to set up SSL. That is why there is a
 seperate playbook for this task. 
 
-C: If you only want the server to be reachable with the BWCloud hostname, set "DOMAIN=="False" in the .env file.
+C: If you have set DOMAIN to false in the .env file, run the ansible playbook without doing anything. The website will be reachable under the bw cloud hostname.
 
-Once you have added the DNS entries, the IT support has confirmed they have set up an alias or you set DOMAIN to false, configure the server by running:
+Once you have added the DNS entries, the IT support has confirmed they have set up an alias or option C applies, configure the server by running:
 ```
 cd ansible
 ansible-playbook server_setup.yml --vault-password-file=.vault_pw
