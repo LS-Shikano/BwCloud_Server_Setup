@@ -42,7 +42,7 @@ git clone git@github.com:LS-Shikano/BwCloud_Server_Setup.git
 There are multiple ways to achieve this, one is the following:
 ```
 cd BWCloud_Server_Setup
-python -m pip venv env
+python -m venv env
 source env/bin/activate
 python -m pip install -r requirements.tx
 ```

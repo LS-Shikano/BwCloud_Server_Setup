@@ -1,6 +1,6 @@
 
-bw_cloud_hostname: f112e1cb-c6e8-4c7e-b3d4-beecf4aee0c3.fr.bw-cloud-instance.org
+bw_cloud_hostname: cc8900d2-3a76-407b-87a6-f7991e50a3eb.fr.bw-cloud-instance.org
 domain: false
 certbot_mail_address: hiwis.shikano@uni-konstanz.de
-git_repo: LS-Shikano/WS22_FirstWave_StudentSurvey
+git_repo: LS-Shikano/WS22_ThirdWave_StudentSurvey
     
